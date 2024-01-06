@@ -98,7 +98,7 @@ with open("./data_gym/processed_label.csv", "a") as f:
 
     
             for k in range(1, 361):
-                # image_gaze = center_gaze_direction(image, k, 900)
+                image_gaze = center_gaze_direction(image, k, 900)
 
                 gaze = k
                 label = get_relative_home_direction(home_vector, gaze)
