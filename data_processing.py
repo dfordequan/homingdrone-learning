@@ -3,7 +3,11 @@ import numpy as np
 import os
 import pandas as pd
 
-file_location = "./data_gym/processed_nextpoint/"
+file_location = "./data_gym/processed_nextpoint_landmarke/"
+
+output_location = "./data_gym/train_nextpoint_landmarke_case/"
+os.makedirs(output_location, exist_ok=True)
+output_csv = "./data_gym/processed_label_nextpoint_landmarke_case.csv"
 
 
 def center_gaze_direction(image, degree, gaze_org):
@@ -30,6 +34,11 @@ def center_gaze_direction(image, degree, gaze_org):
     left_col = center_col - image.shape[1]//2
 
     output_image = np.concatenate((image[:, left_col:], image[:, :left_col]), axis=1)
+
+    ##########only take the upper half of the image
+    output_image = output_image[:int(output_image.shape[0]), :]
+    ##############################################
+
 
     return output_image
 
@@ -103,8 +112,8 @@ path = []
 image_info = pd.read_csv(file_location + "data.csv")
 
 # save data to a csv file
-output_location = "./data_gym/train_nextpoint/"
-with open("./data_gym/processed_label_nextpoint_revised.csv", "w") as f:
+
+with open(output_csv, "w") as f:
     f.write("filename, gaze, pos_x, pos_y, label_1, label_2\n")
     for i in range(3, 31):
         for filename in os.listdir(file_location):
@@ -115,7 +124,8 @@ with open("./data_gym/processed_label_nextpoint_revised.csv", "w") as f:
         #from image_info, find the row that path_idx == i
         pos_x = image_info[image_info['path_idx'] == i]['pos_x'].values[0]
         pos_y = image_info[image_info['path_idx'] == i]['pos_y'].values[0]
-        gaze_org = image_info[image_info['path_idx'] == i]['gaze'].values[0]
+        heading_org = image_info[image_info['path_idx'] == i]['heading'].values[0]
+        gaze_org = (heading_org*180/np.pi)%360
 
         # round gaze to no decimal
         gaze_org = int(gaze_org)
@@ -163,6 +173,6 @@ with open("./data_gym/processed_label_nextpoint_revised.csv", "w") as f:
                 gaze = str(gaze)
 
             filename_gaze = filename[:-4] + "_" + gaze + ".jpg"
-            # cv2.imwrite(output_location + filename_gaze, image_gaze)
+            cv2.imwrite(output_location + filename_gaze, image_gaze)
 
             f.write(filename_gaze + "," + str(gaze) + "," + str(pos_x) + "," + str(pos_y) + "," + str(label[0]) + "," + str(label[1]) + "\n")
