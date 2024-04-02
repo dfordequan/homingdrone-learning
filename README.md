@@ -19,6 +19,10 @@ Test it with any dataset that has rectilinear images and data.csv
 
 After it's done a new column will be added to data.csv
 
+### visualizing
+<code>python3 visualize.py --data_path ./data/20240325_combined --column 
+gazenet_20240319_01</code>
+
 ### utils
 some useful functions to manipulate the dataset
 
