@@ -41,7 +41,6 @@ net = CompactCNN()
 
 # define the transforms
 transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=1),
     transforms.Resize((192, 1800)),
     transforms.ToTensor()
 ])

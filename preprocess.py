@@ -62,7 +62,7 @@ def preprocess(rectilinear_path):
         for file in tqdm(os.listdir(rectilinear_path)):
             if not file.endswith('.jpg'):
                 continue
-            img = cv2.imread(os.path.join(rectilinear_path, file), cv2.IMREAD_GRAYSCALE)
+            img = cv2.imread(os.path.join(rectilinear_path, file))
             
             i = int(file.split('_')[0])
 
