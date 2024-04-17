@@ -28,7 +28,7 @@ class CompactCNN(nn.Module):
 def predict(img_path):
     net = CompactCNN()
 
-    PATH = './gaze_net.pth'
+    PATH = '/home/aoqiao/developer_dq/homingdrone-learning/networks/gazenet_.pth'
     net.load_state_dict(torch.load(PATH))
 
     # img_path = '/home/aoqiao/developer_dq/homingdrone-learning/data_gym/test_combined/home_2_rected.jpg'
@@ -43,6 +43,14 @@ def predict(img_path):
     image = image.unsqueeze(0)
 
     output = net(image)
-    output = torch.atan2(output[0][0], output[0][1])
+    # return output, output[0][1], output[0][0] 
+
+    output = torch.atan2(output[0][1], output[0][0])
     output = output.item()
     return output
+
+print("13:",predict('/home/aoqiao/developer_dq/homingdrone-learning/data/20240403_094112_rectilinear/13_rected_20240403_094112.jpg'))
+print("19:",predict('/home/aoqiao/developer_dq/homingdrone-learning/data/20240403_094112_rectilinear/19_rected_20240403_094112.jpg'))
+print("19_shifted_10:",predict('/home/aoqiao/developer_dq/thesis_data/data_cyberzoo/20240403/20240403_094112_rectilinear/20240403_094112_shifted_10/19_rected_20240403_094112.jpg'))
+print("19_photoshop2:",predict('/home/aoqiao/Downloads/19_rected_20240403_094112_ps3.jpg'))
+print("19_shifted_90:",predict('/home/aoqiao/developer_dq/thesis_data/data_cyberzoo/20240403/20240403_095708_rectilinear/shifted_90/19_rected_20240403_095708.jpg'))

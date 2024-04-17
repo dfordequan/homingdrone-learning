@@ -14,6 +14,7 @@ torch.manual_seed(seed)
 
 
 from models.model import CompactCNN
+from models.model_rgb import CompactCNN_rgb
 from dataset import GazeDataset
 from preprocess import preprocess
 
@@ -23,6 +24,10 @@ parser.add_argument('--data_path', type=str)
 parser.add_argument('--num_epochs', type=int, default=1)
 parser.add_argument('--preprocess', type=bool, default=True)
 parser.add_argument('--no-preprocess', action='store_false', dest='preprocess')
+# parser for rgb images
+parser.add_argument('--rgb', action='store_true', dest='rgb')
+
+
 
 args = parser.parse_args()
 
@@ -37,7 +42,11 @@ if args.preprocess == True:
     preprocess(data_path) 
     print('Preprocessing complete')
 
-net = CompactCNN()
+
+if args.rgb:
+    net = CompactCNN_rgb()
+else:
+    net = CompactCNN()
 
 # define the transforms
 transform = transforms.Compose([
@@ -80,21 +89,22 @@ def train(net, dataloader, optimizer, epochs=1):
 
             loss_100 += loss.item()
             
-            
             if i % 100 == 99:
-                print(f'[{i+1}, {i+1}] loss: {(loss_100/100):.3f}')
-                
-                
-                with open(log_file_path, 'a') as f:
-                    
-    
-                    f.write(f'{i+1},{loss_100/100}\n')
+                # print(f'[{i+1}, {i+1}] loss: {loss_100:.3f}')
 
+                # with open(log_file_path, 'a') as f:
+                #     f.write(f'{i+1},{loss_100}\n')
+
+                # loss_100 = 0.0
+                print(f'[{i+1}, {i+1}] loss: {loss_100/100:.3f}')
+                with open(log_file_path, 'a') as f:
+                    f.write(f'{i+1},{loss_100/100}\n')
                 loss_100 = 0.0
+                
 
 
 # train the network
-num_epochs = 1
+
 print( 'Training the network...')
 train(net, dataloader, optimizer, num_epochs)
 torch.save(net.state_dict(), f'./networks/gazenet_{file_name}.pth')

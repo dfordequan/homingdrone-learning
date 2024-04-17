@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 import os
 import pandas as pd
 from models.model import CompactCNN
+from models.model_rgb import CompactCNN_rgb
 import argparse
 import tqdm
 
@@ -14,20 +15,29 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model_path', type=str)
 parser.add_argument('--data_path', type=str)
 parser.add_argument('--visualize', type=bool, default=False)
+parser.add_argument('--rgb', action='store_true', dest='rgb')
+
+
+
 args = parser.parse_args()
 
+if args.rgb:
+    net = CompactCNN_rgb()
+else:
+    net = CompactCNN()   
+    
 model_path = args.model_path
 
 model = model_path.split('/')[-1][:-4]
 
 
-net = CompactCNN()
+
 net.load_state_dict(torch.load(model_path))
     
 
 def predict(img_path):
     
-    image = Image.open(img_path).convert('L')
+    image = Image.open(img_path)
 
 
     transform = transforms.Compose([
@@ -68,7 +78,15 @@ for file in os.listdir(file_path):
         img_path = os.path.join(file_path, file)
         pred = predict(img_path)
         # pred1, pred2 = predict(img_path)
-        idx = image_info[image_info['path_idx'] == int(file.split('_')[0])].index[0]
+        i = file.split('_')[0]
+
+        date = file.split('_')[2]
+        time = file.split('_')[3].split('.')[0]
+
+        i = i + "_" + date + "_" + time
+
+
+        idx = image_info[image_info['path_idx'] == i].index[0]
 
         image_info.at[idx, f'{model}'] = pred
         # image_info.at[idx, f'{model}_pred1'] = pred1

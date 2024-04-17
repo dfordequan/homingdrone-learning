@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-class CompactCNN1(nn.Module):
+class CompactCNN_rgb(nn.Module):
     def __init__(self):
-        super(CompactCNN1, self).__init__()
+        super(CompactCNN_rgb, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=2, kernel_size=5, stride=4, padding=2)
         self.conv2 = nn.Conv2d(in_channels=2, out_channels=2, kernel_size=5, stride=4, padding=2)
         self.conv3 = nn.Conv2d(in_channels=2, out_channels=2, kernel_size=12, stride=4)

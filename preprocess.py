@@ -64,7 +64,12 @@ def preprocess(rectilinear_path):
                 continue
             img = cv2.imread(os.path.join(rectilinear_path, file))
             
-            i = int(file.split('_')[0])
+            i = file.split('_')[0]
+
+            date = file.split('_')[2]
+            time = file.split('_')[3].split('.')[0]
+
+            i = i + "_" + date + "_" + time
 
             #from image_info, find the row that path_idx == i
             pos_x = image_info[image_info['path_idx'] == i]['pos_x'].values[0]

@@ -2,9 +2,9 @@ import numpy as np
 import os
 import pandas as pd
 
-optitrack_file = '/home/aoqiao/developer_dq/thesis_data/data_cyberzoo/20240321/20240321/test7.csv'
-up = 'z' # or 'y'
-time_offset = 0.0
+optitrack_file = '/home/aoqiao/developer_dq/thesis_data/data_cyberzoo/20240403/20240403/1151.csv'
+up = 'y' # or 'y'
+time_offset = -72.515
 # x_offset = 0.0
 # y_offset = 0.0
 # z_offset = 0.0
