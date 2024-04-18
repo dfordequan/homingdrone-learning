@@ -17,7 +17,8 @@ class GazeDataset(Dataset):
     
     def __getitem__(self, index):
         img_path = os.path.join(self.root_dir, self.annotations.iloc[index, 0])
-        image = Image.open(img_path).convert('L') 
+        # image = Image.open(img_path).convert('L') 
+        image = Image.open(img_path)
         numeric_data = self.annotations.iloc[index, 4:6].values.astype(float)
         y_label = torch.tensor(numeric_data, dtype=torch.float) 
 

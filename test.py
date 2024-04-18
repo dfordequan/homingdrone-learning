@@ -8,14 +8,15 @@ import os
 import pandas as pd
 from models.model import CompactCNN
 from models.model_rgb import CompactCNN_rgb
+from models.model_ds import CompactCNN_ds
 import argparse
 import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model_path', type=str)
 parser.add_argument('--data_path', type=str)
-parser.add_argument('--visualize', type=bool, default=False)
 parser.add_argument('--rgb', action='store_true', dest='rgb')
+parser.add_argument('--ds', action='store_true', dest='ds')
 
 
 
@@ -23,8 +24,16 @@ args = parser.parse_args()
 
 if args.rgb:
     net = CompactCNN_rgb()
+    size = (192, 1800)
+    suffix = '_rgb'
+elif args.ds:
+    net = CompactCNN_ds()
+    size = (48, 450)
+    suffix = '_ds'
 else:
-    net = CompactCNN()   
+    net = CompactCNN()
+    size = (192, 1800)
+    suffix = '' 
     
 model_path = args.model_path
 
@@ -35,13 +44,16 @@ model = model_path.split('/')[-1][:-4]
 net.load_state_dict(torch.load(model_path))
     
 
-def predict(img_path):
+def predict(img_path, ds=False):
     
     image = Image.open(img_path)
 
+    if ds:
+        image = image.resize((450, 48))
+
 
     transform = transforms.Compose([
-        transforms.Resize((192, 1800)),
+        transforms.Resize(size),
         transforms.ToTensor()
     ])
     image = transform(image)
@@ -76,7 +88,7 @@ print('Predicting...')
 for file in os.listdir(file_path):
     if file.endswith('.jpg'):
         img_path = os.path.join(file_path, file)
-        pred = predict(img_path)
+        pred = predict(img_path, args.ds)
         # pred1, pred2 = predict(img_path)
         i = file.split('_')[0]
 

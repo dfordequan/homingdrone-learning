@@ -15,6 +15,7 @@ torch.manual_seed(seed)
 
 from models.model import CompactCNN
 from models.model_rgb import CompactCNN_rgb
+from models.model_ds import CompactCNN_ds
 from dataset import GazeDataset
 from preprocess import preprocess
 
@@ -26,6 +27,7 @@ parser.add_argument('--preprocess', type=bool, default=True)
 parser.add_argument('--no-preprocess', action='store_false', dest='preprocess')
 # parser for rgb images
 parser.add_argument('--rgb', action='store_true', dest='rgb')
+parser.add_argument('--ds', action='store_true', dest='ds')
 
 
 
@@ -39,27 +41,36 @@ file_name = data_path.split('/')[-1]
 # preprocess the data
 if args.preprocess == True:
     print('Preprocessing the data...' )
-    preprocess(data_path) 
+    preprocess(data_path, ds=args.ds)
     print('Preprocessing complete')
 
 
 if args.rgb:
     net = CompactCNN_rgb()
+    size = (192, 1800)
+    suffix = '_rgb'
+elif args.ds:
+    net = CompactCNN_ds()
+    size = (48, 450)
+    suffix = '_ds'
 else:
     net = CompactCNN()
+    size = (192, 1800)
+    suffix = ''
 
 # define the transforms
 transform = transforms.Compose([
-    transforms.Resize((192, 1800)),
+    transforms.Resize(size),
     transforms.ToTensor()
 ])
 
 # define the dataset
 dataset = GazeDataset(
-    csv_file=data_path+f'/label_training_{file_name}.csv',
-    root_dir=data_path+f'/training_{file_name}/',
+    csv_file=data_path+f'/label_training_{file_name}{suffix}.csv',
+    root_dir=data_path+f'/training_{file_name}{suffix}/',
     transform=transform
 )
+
 
 # define the data loader
 dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
@@ -70,7 +81,7 @@ optimizer = optim.Adam(net.parameters(), lr=9e-4)
 # define the training loop
 def train(net, dataloader, optimizer, epochs=1):
     net.train()
-    log_file_path = f'./logs/{file_name}.csv'
+    log_file_path = f'./logs/{file_name}{suffix}.csv'
     with open(log_file_path, 'w') as f:
         f.write('Iteration,Loss\n')
     for epoch in range(epochs):
@@ -107,5 +118,5 @@ def train(net, dataloader, optimizer, epochs=1):
 
 print( 'Training the network...')
 train(net, dataloader, optimizer, num_epochs)
-torch.save(net.state_dict(), f'./networks/gazenet_{file_name}.pth')
-print(f'Finished Training, network saved as {file_name}.pth')
+torch.save(net.state_dict(), f'./networks/gazenet_{file_name}{suffix}.pth')
+print(f'Finished Training, network saved as {file_name}{suffix}.pth')

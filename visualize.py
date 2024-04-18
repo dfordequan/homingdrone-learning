@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--column', type=str)
@@ -51,4 +52,7 @@ for i in range(len(data)):
     # add legend
     ax.legend(['Predict', 'Ground'])
  
-plt.show()
+# plt.show()
+dataname = args.data_path.split('/')[-1]
+os.makedirs(f'./plots/{column}', exist_ok=True)
+plt.savefig(f'./plots/{column}/{dataname}_{column}.png')
