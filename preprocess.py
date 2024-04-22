@@ -44,19 +44,17 @@ def get_relative_home_direction(home_direction, gaze):
     return relative_home_direction
 
 
-def preprocess(rectilinear_path, ds=False):
+def preprocess(rectilinear_path, suffix=''):
     data_name = rectilinear_path.split('/')[-1]
 
     data_csv = f'{rectilinear_path}/data.csv'
 
     image_info = pd.read_csv(data_csv)  
 
-    if ds:
-        output_csv = f'{rectilinear_path}/label_training_{data_name}_ds.csv'
-        output_location = f'{rectilinear_path}/training_{data_name}_ds/'
-    else:
-        output_csv = f'{rectilinear_path}/label_training_{data_name}.csv'
-        output_location = f'{rectilinear_path}/training_{data_name}/'
+
+    output_csv = f'{rectilinear_path}/label_training_{data_name}{suffix}.csv'
+    output_location = f'{rectilinear_path}/training_{data_name}{suffix}/'
+
 
     if not os.path.exists(output_location):
         os.makedirs(output_location)
@@ -97,7 +95,7 @@ def preprocess(rectilinear_path, ds=False):
                     gaze += 360
             
                 image_gaze = center_gaze_direction(img, gaze, gaze_org)
-                if ds:
+                if suffix == '_ds':
                     image_gaze = cv2.resize(image_gaze, (450, 48))
 
                 label = get_relative_home_direction(home_vector, gaze)

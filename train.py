@@ -38,12 +38,6 @@ num_epochs = args.num_epochs
 
 file_name = data_path.split('/')[-1]
 
-# preprocess the data
-if args.preprocess == True:
-    print('Preprocessing the data...' )
-    preprocess(data_path, ds=args.ds)
-    print('Preprocessing complete')
-
 
 if args.rgb:
     net = CompactCNN_rgb()
@@ -57,6 +51,12 @@ else:
     net = CompactCNN()
     size = (192, 1800)
     suffix = ''
+
+# preprocess the data
+if args.preprocess == True:
+    print('Preprocessing the data...' )
+    preprocess(data_path, suffix)
+    print('Preprocessing complete')
 
 # define the transforms
 transform = transforms.Compose([
