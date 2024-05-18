@@ -27,9 +27,9 @@ offset = 0
  
  
 for i in range(len(data)):
-    pos_x = data['pos_x'][i]
-    pos_y = data['pos_y'][i]
-    heading = data['heading'][i]
+    pos_x = data['pos_x_mocap'][i]
+    pos_y = data['pos_y_mocap'][i]
+    heading = data['heading_mocap'][i]
     prediction = data[f'{column}'][i]
  
     gaze = np.rad2deg(heading) % 360

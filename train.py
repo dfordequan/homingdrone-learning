@@ -15,7 +15,7 @@ torch.manual_seed(seed)
 
 from models.model import CompactCNN
 from models.model_rgb import CompactCNN_rgb
-from models.model_ds import CompactCNN_ds
+# from models.model_ds import CompactCNN_ds
 from dataset import GazeDataset
 from preprocess import preprocess
 

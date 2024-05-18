@@ -8,7 +8,7 @@ import os
 import pandas as pd
 from models.model import CompactCNN
 from models.model_rgb import CompactCNN_rgb
-from models.model_ds import CompactCNN_ds
+# from models.model_ds import CompactCNN_dss
 import argparse
 import tqdm
 
