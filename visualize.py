@@ -17,20 +17,27 @@ column = args.column
 
 data = pd.read_csv(file_path)
  
- 
+
+
+def get_angular_error(prediction, ground_truth):
+    error = np.abs(prediction - ground_truth)
+    if error > np.pi:
+        error = 2*np.pi - error
+    return error*180/np.pi
  
 fig, ax = plt.subplots()
 ax.set_xlim(-5, 5)
 ax.set_ylim(-5, 5)
  
+
 offset = 0
- 
  
 for i in range(len(data)):
     pos_x = data['pos_x_mocap'][i]
     pos_y = data['pos_y_mocap'][i]
     heading = data['heading_mocap'][i]
     prediction = data[f'{column}'][i]
+    confidence = data[f'{column}_conf'][i]
  
     gaze = np.rad2deg(heading) % 360
  

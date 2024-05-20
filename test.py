@@ -62,9 +62,12 @@ def predict(img_path, ds=False):
     output = net(image)
     # output = torch.atan2(output[0][0], output[0][1])
     # output = torch.arctan(output[0][0] / output[0][1])
-    output = torch.atan2(output[0][1], output[0][0])
-    output = output.item()
-    return output
+    prediction= torch.atan2(output[0][1], output[0][0])
+    prediction = prediction.item()
+    # compute the norm of the output, interpret it as the confidence, which is abs of 1 - norm
+    norm = torch.norm(output)
+    confidence = 1 - norm.item()
+    return prediction, confidence
 
     # return output[0][0].item(), output[0][1].item()
 
@@ -80,6 +83,7 @@ image_info = pd.read_csv(csv_path)
 #     image_info['ground_truth'] = 0
 
 image_info[f'{model}'] = 0
+image_info[f'{model}_conf'] = 0
 # image_info[f'{model}_pred1'] = 0
 # image_info[f'{model}_pred2'] = 0
 
@@ -88,7 +92,7 @@ print('Predicting...')
 for file in os.listdir(file_path):
     if file.endswith('.jpg'):
         img_path = os.path.join(file_path, file)
-        pred = predict(img_path, args.ds)
+        pred, conf = predict(img_path, args.ds)
         # pred1, pred2 = predict(img_path)
         i = file.split('_')[0]
 
@@ -101,6 +105,7 @@ for file in os.listdir(file_path):
         idx = image_info[image_info['path_idx'] == i].index[0]
 
         image_info.at[idx, f'{model}'] = pred
+        image_info.at[idx, f'{model}_conf'] = conf
         # image_info.at[idx, f'{model}_pred1'] = pred1
         # image_info.at[idx, f'{model}_pred2'] = pred2
 
