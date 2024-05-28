@@ -3,6 +3,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import torch
 from torchvision import transforms
+from torchvision.transforms import Grayscale
 import argparse
 from tqdm import tqdm
 
@@ -15,7 +16,7 @@ torch.manual_seed(seed)
 
 from models.model import CompactCNN
 from models.model_rgb import CompactCNN_rgb
-# from models.model_ds import CompactCNN_ds
+from models.model_ds import CompactCNN_ds
 from dataset import GazeDataset
 from preprocess import preprocess
 
@@ -41,16 +42,30 @@ file_name = data_path.split('/')[-1]
 
 if args.rgb:
     net = CompactCNN_rgb()
-    size = (192, 1800)
     suffix = '_rgb'
+    # define the transforms
+    transform = transforms.Compose([
+    transforms.Resize((192, 1800)),
+    transforms.ToTensor()
+    ])
 elif args.ds:
     net = CompactCNN_ds()
-    size = (48, 450)
     suffix = '_ds'
+    # define the transforms
+    transform = transforms.Compose([
+    transforms.Resize((48, 450)),
+    transforms.ToTensor()
+    ])
 else:
     net = CompactCNN()
     size = (192, 1800)
     suffix = ''
+    # define the transforms
+    transform = transforms.Compose([
+    transforms.Resize((192, 1800)),
+    Grayscale(num_output_channels=1),
+    transforms.ToTensor()
+    ])
 
 # preprocess the data
 if args.preprocess == True:
@@ -58,11 +73,7 @@ if args.preprocess == True:
     preprocess(data_path, suffix)
     print('Preprocessing complete')
 
-# define the transforms
-transform = transforms.Compose([
-    transforms.Resize(size),
-    transforms.ToTensor()
-])
+
 
 # define the dataset
 dataset = GazeDataset(

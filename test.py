@@ -4,11 +4,12 @@ import torch.nn.functional as F
 
 from PIL import Image
 import torchvision.transforms as transforms
+from torchvision.transforms import Grayscale
 import os
 import pandas as pd
 from models.model import CompactCNN
 from models.model_rgb import CompactCNN_rgb
-# from models.model_ds import CompactCNN_dss
+from models.model_ds import CompactCNN_ds
 import argparse
 import tqdm
 
@@ -24,16 +25,30 @@ args = parser.parse_args()
 
 if args.rgb:
     net = CompactCNN_rgb()
-    size = (192, 1800)
     suffix = '_rgb'
+    # define the transforms
+    transform = transforms.Compose([
+    transforms.Resize((192, 1800)),
+    transforms.ToTensor()
+    ])
 elif args.ds:
     net = CompactCNN_ds()
-    size = (48, 450)
     suffix = '_ds'
+    # define the transforms
+    transform = transforms.Compose([
+    transforms.Resize((48, 450)),
+    transforms.ToTensor()
+    ])
 else:
     net = CompactCNN()
     size = (192, 1800)
-    suffix = '' 
+    suffix = ''
+    # define the transforms
+    transform = transforms.Compose([
+    transforms.Resize((192, 1800)),
+    Grayscale(num_output_channels=1),
+    transforms.ToTensor()
+    ])
     
 model_path = args.model_path
 
@@ -52,10 +67,6 @@ def predict(img_path, ds=False):
         image = image.resize((450, 48))
 
 
-    transform = transforms.Compose([
-        transforms.Resize(size),
-        transforms.ToTensor()
-    ])
     image = transform(image)
     image = image.unsqueeze(0)
 
@@ -66,7 +77,9 @@ def predict(img_path, ds=False):
     prediction = prediction.item()
     # compute the norm of the output, interpret it as the confidence, which is abs of 1 - norm
     norm = torch.norm(output)
-    confidence = 1 - norm.item()
+    confidence = abs(1 - norm.item())
+    ### for distance, which is the magnitude of the output
+    confidence = norm.item()
     return prediction, confidence
 
     # return output[0][0].item(), output[0][1].item()
@@ -111,3 +124,4 @@ for file in os.listdir(file_path):
 
 image_info.to_csv(csv_path, index=False)
 print('Done')
+

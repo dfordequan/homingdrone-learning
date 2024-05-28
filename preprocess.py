@@ -100,6 +100,10 @@ def preprocess(rectilinear_path, suffix=''):
 
                 label = get_relative_home_direction(home_vector, gaze)
 
+                ###### for distance #####
+                distance = np.sqrt(pos_x**2 + pos_y**2)
+                label = label * distance
+
 
                 if gaze < 10:
                     gaze = "00" + str(gaze)
